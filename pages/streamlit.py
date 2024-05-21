@@ -147,7 +147,7 @@ else:
 
     # Add logos to the chart
     logos = {
-        "Asharq News": "https://path/to/asharq_logo.png",
+        "Asharq News": "asharq.png",
         "Sky News Arabia": "https://path/to/skynews_logo.png",
         "Al Arabiya": "https://path/to/alarabiya_logo.png",
         "Al Jazeera": "https://path/to/aljazeera_logo.png",
