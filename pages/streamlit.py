@@ -109,5 +109,3 @@ closest_attributes = attributes.sort_values(by='distance').head(10)
 st.write(f"{channel} is known for the following attributes:")
 st.write(", ".join(closest_attributes['Brand'].tolist()))
 
-# Display DataFrame for the selected channel
-st.dataframe(df[df['Brand'] == channel])
