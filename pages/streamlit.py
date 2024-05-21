@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from scipy.spatial.distance import cdist
+from scipy.spatial import ConvexHull
+import numpy as np
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
@@ -53,9 +54,19 @@ def find_closest_topics(channel_name, df):
     channel_point = df[df['Colonne1'] == channel_name][['Item', 'Brand']].values
     other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
     distances = cdist(channel_point, other_points)
-    closest_indices = distances.argsort()[0][:8]  # Change this to 5 for the five closest topics
+    closest_indices = distances.argsort()[0][:8]  # Change this to 8 for the eight closest topics
     closest_topics = df.iloc[closest_indices]
     return closest_topics
+
+# Function to calculate Bezier curve points
+def get_bezier_curve(points, n_points=100):
+    n = len(points)
+    x_vals, y_vals = zip(*points)
+    t = np.linspace(0, 1, n_points)
+    polynomial_array = np.array([t**(n-1-i) * (1-t)**i * np.math.comb(n-1, i) for i in range(n)])
+    x_vals = np.dot(x_vals, polynomial_array)
+    y_vals = np.dot(y_vals, polynomial_array)
+    return x_vals, y_vals
 
 # Channel picker
 selected_channel = st.selectbox("Select a channel to view details", options=colors.keys())
@@ -87,14 +98,19 @@ fig.add_scatter(
 # Show only the six channels in the legend
 fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
-# Add shadow shape connecting the selected channel to its closest topics
+# Add smooth shape connecting the selected channel to its closest topics
 closest_topics = find_closest_topics(selected_channel, df)
-points = pd.concat([df[df['Colonne1'] == selected_channel], closest_topics])[['Item', 'Brand']]
-points = pd.concat([points, points.iloc[[0]]])  # Close the polygon
+points = pd.concat([df[df['Colonne1'] == selected_channel], closest_topics])[['Item', 'Brand']].values
+hull = ConvexHull(points)
+hull_points = points[hull.vertices]
+hull_points = np.vstack([hull_points, hull_points[0]])  # Close the polygon
+
+# Calculate Bezier curve points for smooth shape
+x_vals, y_vals = get_bezier_curve(hull_points, n_points=100)
 
 fig.add_trace(go.Scatter(
-    x=points['Item'],
-    y=points['Brand'],
+    x=x_vals,
+    y=y_vals,
     fill='toself',
     fillcolor=colors[selected_channel],
     opacity=0.1,
