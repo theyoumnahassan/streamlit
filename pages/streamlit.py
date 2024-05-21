@@ -98,7 +98,7 @@ for index, row in highlighted.iterrows():
         marker=dict(
             size=12,  # Adjusted dot size
             color='white',
-            opacity=1
+            opacity=0.5
         ),
         text=[row['Brand']],
         textposition='top center',
