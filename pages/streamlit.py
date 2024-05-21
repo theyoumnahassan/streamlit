@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -77,54 +76,68 @@ def smooth_shape(points, resolution=100):
     return x_new, y_new
 
 # Channel picker
-selected_channel = st.selectbox("Select a channel to view details", options=colors.keys())
+channel_options = list(colors.keys()) + ["All Channels"]
+selected_channel = st.selectbox("Select a channel to view details", options=channel_options)
 
 # Plotting the perceptual chart using Plotly
-fig = px.scatter(
-    df,
-    x='Item',
-    y='Brand',
-    text='Colonne1',
-    color='Colonne1',
-    color_discrete_map=colors,
-    title=f'Perceptual Chart for {selected_channel}',
-    labels={'Item': 'Item', 'Brand': 'Brand'}
-)
+if selected_channel != "All Channels":
+    fig = px.scatter(
+        df,
+        x='Item',
+        y='Brand',
+        text='Colonne1',
+        color='Colonne1',
+        color_discrete_map=colors,
+        title=f'Perceptual Chart for {selected_channel}',
+        labels={'Item': 'Item', 'Brand': 'Brand'}
+    )
 
-# Highlight the selected channel
-fig.update_traces(marker=dict(size=12, opacity=0.8, color='black'), textposition='top center')
-fig.add_scatter(
-    x=df[df['Colonne1'] == selected_channel]['Item'],
-    y=df[df['Colonne1'] == selected_channel]['Brand'],
-    mode='markers+text',
-    marker=dict(size=15, color=colors[selected_channel], symbol='star', line=dict(width=2, color='black')),
-    text=df[df['Colonne1'] == selected_channel]['Colonne1'],
-    textposition='top center',
-    showlegend=False
-)
+    # Highlight the selected channel
+    fig.update_traces(marker=dict(size=12, opacity=0.8, color='black'), textposition='top center')
+    fig.add_scatter(
+        x=df[df['Colonne1'] == selected_channel]['Item'],
+        y=df[df['Colonne1'] == selected_channel]['Brand'],
+        mode='markers+text',
+        marker=dict(size=15, color=colors[selected_channel], symbol='star', line=dict(width=2, color='black')),
+        text=df[df['Colonne1'] == selected_channel]['Colonne1'],
+        textposition='top center',
+        showlegend=False
+    )
 
-# Show only the six channels in the legend
-fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
+    # Show only the six channels in the legend
+    fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
-# Add smooth shape connecting the selected channel to its closest topics
-closest_topics = find_closest_topics(selected_channel, df)
-points = pd.concat([df[df['Colonne1'] == selected_channel], closest_topics])[['Item', 'Brand']].values
-hull = ConvexHull(points)
-hull_points = points[hull.vertices]
-hull_points = np.vstack([hull_points, hull_points[0]])  # Close the polygon
+    # Add smooth shape connecting the selected channel to its closest topics
+    closest_topics = find_closest_topics(selected_channel, df)
+    points = pd.concat([df[df['Colonne1'] == selected_channel], closest_topics])[['Item', 'Brand']].values
+    hull = ConvexHull(points)
+    hull_points = points[hull.vertices]
+    hull_points = np.vstack([hull_points, hull_points[0]])  # Close the polygon
 
-# Calculate smooth shape points
-x_vals, y_vals = smooth_shape(hull_points)
+    # Calculate smooth shape points
+    x_vals, y_vals = smooth_shape(hull_points)
 
-fig.add_trace(go.Scatter(
-    x=x_vals,
-    y=y_vals,
-    fill='toself',
-    fillcolor=colors[selected_channel],
-    opacity=0.1,
-    line=dict(color='rgba(0,0,0,0)'),
-    showlegend=False
-))
+    fig.add_trace(go.Scatter(
+        x=x_vals,
+        y=y_vals,
+        fill='toself',
+        fillcolor=colors[selected_channel],
+        opacity=0.1,
+        line=dict(color='rgba(0,0,0,0)'),
+        showlegend=False
+    ))
+
+else:
+    fig = px.scatter(
+        df,
+        x='Item',
+        y='Brand',
+        text='Colonne1',
+        color='Colonne1',
+        color_discrete_map=colors,
+        title='Perceptual Chart for All Channels',
+        labels={'Item': 'Item', 'Brand': 'Brand'}
+    )
 
 fig.update_layout(
     width=1200,
@@ -139,8 +152,10 @@ fig.update_layout(
 st.plotly_chart(fig)
 
 # Display insights for the selected channel
-st.subheader(f"Insights for {selected_channel}")
-st.markdown(f"**{selected_channel}** tends to be known for:")
-st.write(", ".join(closest_topics['Colonne1'].values))
-
-# Run the app with: streamlit run perceptual_chart.py
+if selected_channel != "All Channels":
+    st.subheader(f"Insights for {selected_channel}")
+    st.markdown(f"**{selected_channel}** tends to be known for:")
+    st.write(", ".join(closest_topics['Colonne1'].values))
+else:
+    st.subheader("Insights for All Channels")
+    st.markdown("This chart combines all channels for a comprehensive view.")
