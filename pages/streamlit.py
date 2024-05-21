@@ -38,6 +38,16 @@ logos = {
     "Al Ekhbariya": "https://path_to_al_ekhbria_logo.png"
 }
 
+# Define colors for each news channel
+channel_colors = {
+    "Asharq News": "red",
+    "Sky News Arabia": "green",
+    "Al Arabiya": "blue",
+    "Al Jazeera": "yellow",
+    "Al Hadath": "orange",
+    "Al Ekhbariya": "purple"
+}
+
 # Convert to DataFrame
 df = pd.DataFrame(data)
 
@@ -73,8 +83,8 @@ news_channels = ["Asharq News", "Sky News Arabia", "Al Arabiya", "Al Jazeera", "
 channel = st.selectbox("Choose a channel to focus on:", news_channels)
 
 # Highlight specific news channels and relevant topics
-df['color'] = df['Brand'].apply(lambda x: 'red' if x == 'Asharq News' else ('blue' if x not in news_channels else 'green'))
-df['size'] = df['Brand'].apply(lambda x: 10 if x in news_channels else 6)  # Reduced dot size
+df['color'] = df['Brand'].apply(lambda x: channel_colors[x] if x in channel_colors else 'gray')
+df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 
 # Create Perceptual Map
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
@@ -96,9 +106,9 @@ for index, row in highlighted.iterrows():
         y=[row['Y']],
         mode='markers+text',
         marker=dict(
-            size=12,  # Adjusted dot size
+            size=20,
             color='white',
-            opacity=0.5
+            opacity=1
         ),
         text=[row['Brand']],
         textposition='top center',
@@ -111,8 +121,7 @@ for news_channel in news_channels:
     closest = attributes.sort_values(by='distance').head(10)
     closest = pd.concat([closest, channel_data])
     
-    color = 'white' if news_channel == channel else 'gray'  # Reduced polygon color
-    fillcolor = 'rgba(255, 255, 255, 0.1)' if news_channel == channel else 'rgba(128, 128, 128, 0.1)'  # Reduced polygon fill color
+    color = channel_colors[news_channel]
 
     # Convex hull to create the polygon
     points = np.vstack((closest['X'], closest['Y'])).T
@@ -125,7 +134,7 @@ for news_channel in news_channels:
         mode='lines',
         line=dict(color=color, width=2, dash='dash'),
         fill='toself',
-        fillcolor=fillcolor,
+        fillcolor=f'rgba({color}, 0.1)',
         showlegend=False
     ))
 
@@ -141,11 +150,10 @@ for news_channel in news_channels:
             yref="y",
             x=x_val,
             y=y_val,
-            sizex=0.12,  # Adjusted logo size
-            sizey=0.12,  # Adjusted logo size
+            sizex=0.1,
+            sizey=0.1,
             xanchor="center",
-            yanchor="middle",
-            opacity=0.8
+            yanchor="middle"
         )
     )
 
