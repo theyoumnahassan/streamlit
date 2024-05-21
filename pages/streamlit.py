@@ -47,15 +47,30 @@ colors = {
 # Assign colors to the dataframe
 df['color'] = df['Colonne1'].map(colors).fillna('black')
 
+# Function to find the closest topics
+def find_closest_topics(channel_name, df):
+    channel_point = df[df['Colonne1'] == channel_name][['Item', 'Brand']].values
+    other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
+    distances = cdist(channel_point, other_points)
+    closest_indices = distances.argsort()[0][:3]
+    closest_topics = df.iloc[closest_indices]['Colonne1'].values
+    return closest_topics
+
+# Channel picker
+selected_channel = st.selectbox("Select a channel to view details", options=colors.keys())
+
+# Filter data for the selected channel
+filtered_df = df[df['Colonne1'] == selected_channel]
+
 # Plotting the perceptual chart using Plotly
 fig = px.scatter(
-    df,
+    filtered_df,
     x='Item',
     y='Brand',
     text='Colonne1',
     color='Colonne1',
     color_discrete_map=colors,
-    title='Perceptual Chart',
+    title=f'Perceptual Chart for {selected_channel}',
     labels={'Item': 'Item', 'Brand': 'Brand'}
 )
 
@@ -73,21 +88,12 @@ fig.update_layout(
 
 st.plotly_chart(fig)
 
-# Function to find the closest topics
-def find_closest_topics(channel_name, df):
-    channel_point = df[df['Colonne1'] == channel_name][['Item', 'Brand']].values
-    other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
-    distances = cdist(channel_point, other_points)
-    closest_indices = distances.argsort()[0][:3]
-    closest_topics = df.iloc[closest_indices]['Colonne1'].values
-    return closest_topics
+# Display insights for the selected channel
+st.subheader(f"Insights for {selected_channel}")
+closest_topics = find_closest_topics(selected_channel, df)
+st.markdown(f"**{selected_channel}** tends to be known for:")
+st.write(", ".join(closest_topics))
 
-# Display insights for each channel
-st.subheader("Channel Insights")
+# Run the app with: streamlit run perceptual_chart.py
 
-channels = ["Asharq News", "Sky News Arabia", "Al Arabiya", "Al Jazeera", "Al Hadath", "Al Ekhbariya"]
-for channel in channels:
-    closest_topics = find_closest_topics(channel, df)
-    st.markdown(f"**{channel}** tends to be known for:")
-    st.write(", ".join(closest_topics))
 
