@@ -36,6 +36,28 @@ logos = {
     "Al Ekhbariya": "https://path_to_al_ekhbria_logo.png"
 }
 
+
+# Calculate maximum size for circles
+max_circle_size = df['size'].max()
+
+# Highlight the selected channel and its closest attributes
+highlighted = pd.concat([closest_attributes, df[df['Brand'] == channel]])
+
+for index, row in highlighted.iterrows():
+    fig.add_trace(go.Scatter(
+        x=[row['X']],
+        y=[row['Y']],
+        mode='markers+text',
+        marker=dict(
+            size=max_circle_size,
+            color='white',
+            opacity=1
+        ),
+        text=[row['Brand']],
+        textposition='top center',
+        showlegend=False
+    ))
+
 # Define colors for each news channel
 channel_colors = {
     "Asharq News": "red",
