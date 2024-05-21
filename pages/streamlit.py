@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from scipy.spatial.distance import cdist
 
 # Set page layout to wide
@@ -54,7 +55,7 @@ def find_closest_topics(channel_name, df):
     distances = cdist(channel_point, other_points)
     closest_indices = distances.argsort()[0][:3]
     closest_topics = df.iloc[closest_indices]['Colonne1'].values
-    return closest_topics
+    return df.iloc[closest_indices]
 
 # Channel picker
 selected_channel = st.selectbox("Select a channel to view details", options=colors.keys())
@@ -72,12 +73,12 @@ fig = px.scatter(
 )
 
 # Highlight the selected channel
-fig.update_traces(marker=dict(size=12, opacity=0.8), textposition='top center')
+fig.update_traces(marker=dict(size=12, opacity=0.8, color='black'), textposition='top center')
 fig.add_scatter(
     x=df[df['Colonne1'] == selected_channel]['Item'],
     y=df[df['Colonne1'] == selected_channel]['Brand'],
     mode='markers+text',
-    marker=dict(size=15, color=colors[selected_channel], symbol='star'),
+    marker=dict(size=15, color=colors[selected_channel], symbol='star', line=dict(width=2, color='black')),
     text=df[df['Colonne1'] == selected_channel]['Colonne1'],
     textposition='top center',
     showlegend=False
@@ -85,6 +86,17 @@ fig.add_scatter(
 
 # Show only the six channels in the legend
 fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
+
+# Add lines connecting the selected channel to its closest topics
+closest_topics = find_closest_topics(selected_channel, df)
+for _, topic_row in closest_topics.iterrows():
+    fig.add_trace(go.Scatter(
+        x=[df[df['Colonne1'] == selected_channel]['Item'].values[0], topic_row['Item']],
+        y=[df[df['Colonne1'] == selected_channel]['Brand'].values[0], topic_row['Brand']],
+        mode='lines',
+        line=dict(color=colors[selected_channel], width=2, dash='dot'),
+        showlegend=False
+    ))
 
 fig.update_layout(
     width=1200,
@@ -100,8 +112,7 @@ st.plotly_chart(fig)
 
 # Display insights for the selected channel
 st.subheader(f"Insights for {selected_channel}")
-closest_topics = find_closest_topics(selected_channel, df)
 st.markdown(f"**{selected_channel}** tends to be known for:")
-st.write(", ".join(closest_topics))
+st.write(", ".join(closest_topics['Colonne1'].values))
 
 # Run the app with: streamlit run perceptual_chart.py
