@@ -90,7 +90,7 @@ fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in 
 # Add shadow shape connecting the selected channel to its closest topics
 closest_topics = find_closest_topics(selected_channel, df)
 points = pd.concat([df[df['Colonne1'] == selected_channel], closest_topics])[['Item', 'Brand']]
-points = points.concat(points.iloc[0])  # Close the polygon
+points = pd.concat([points, points.iloc[[0]]])  # Close the polygon
 
 fig.add_trace(go.Scatter(
     x=points['Item'],
