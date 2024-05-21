@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
-import numpy as np
-from scipy.spatial import ConvexHull
 
 # Define data
 data = {
@@ -58,7 +56,6 @@ fill_colors = {
     'purple': 'rgba(128, 0, 128, 0.1)'
 }
 
-
 # Convert to DataFrame
 df = pd.DataFrame(data)
 
@@ -97,8 +94,12 @@ channel = st.selectbox("Choose a channel to focus on:", news_channels)
 df['color'] = df['Brand'].apply(lambda x: channel_colors[x] if x in channel_colors else 'gray')
 df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 
-# Create Perceptual Map
-fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
+# Create Perceptual Map with customized legend
+fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'],
+                 color_discrete_map=channel_colors)
+
+# Remove legend title and update legend font color
+fig.update_layout(legend_title=None, legend_font=dict(color='white'))
 
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
@@ -125,7 +126,6 @@ for index, row in highlighted.iterrows():
         textposition='top center',
         showlegend=False
     ))
-
 
 # Add logos to the plot
 for news_channel in news_channels:
