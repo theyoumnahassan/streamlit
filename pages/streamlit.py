@@ -97,8 +97,11 @@ def create_perceptual_chart(selected_channel):
         marker=dict(size=15, color=colors[selected_channel], symbol='star', line=dict(width=2, color='black')),
         text=df[df['Colonne1'] == selected_channel]['Colonne1'],
         textposition='top center',
-        showlegend=True
+        showlegend=False
     )
+
+    # Show only the six channels in the legend
+    fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
     # Add smooth shape connecting the selected channel to its closest topics
     closest_topics = find_closest_topics(selected_channel, df)
@@ -120,18 +123,6 @@ def create_perceptual_chart(selected_channel):
         showlegend=False
     ))
 
-    # Add legend entries for the six channels
-    for channel in colors.keys():
-        fig.add_scatter(
-            x=[None],
-            y=[None],
-            mode='markers',
-            marker=dict(size=15, color=colors[channel], symbol='circle'),
-            legendgroup=channel,
-            showlegend=True,
-            name=channel
-        )
-
     fig.update_layout(
         width=1200,
         height=800,
@@ -139,8 +130,7 @@ def create_perceptual_chart(selected_channel):
         font=dict(size=14),
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(showgrid=False),
-        yaxis=dict(showgrid=False),
-        legend=dict(itemsizing='constant')
+        yaxis=dict(showgrid=False)
     )
 
     st.plotly_chart(fig)
@@ -184,18 +174,6 @@ def create_all_perceptual_chart():
             showlegend=False
         ))
 
-    # Add legend entries for the six channels
-    for channel in colors.keys():
-        fig.add_scatter(
-            x=[None],
-            y=[None],
-            mode='markers',
-            marker=dict(size=15, color=colors[channel], symbol='circle'),
-            legendgroup=channel,
-            showlegend=True,
-            name=channel
-        )
-
     fig.update_layout(
         width=1200,
         height=800,
@@ -203,8 +181,7 @@ def create_all_perceptual_chart():
         font=dict(size=14),
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(showgrid=False),
-        yaxis=dict(showgrid=False),
-        legend=dict(itemsizing='constant')
+        yaxis=dict(showgrid=False)
     )
 
     st.plotly_chart(fig)
