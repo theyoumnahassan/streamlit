@@ -105,7 +105,7 @@ attributes = df[~df['Brand'].isin(news_channels)]
 closest_attributes = attributes.sort_values(by='distance').head(10)
 
 # Highlight the selected channel and its closest attributes
-highlighted = closest_attributes.append(df[df['Brand'] == channel])
+highlighted = pd.concat([closest_attributes, df[df['Brand'] == channel]])
 
 for index, row in highlighted.iterrows():
     fig.add_trace(go.Scatter(
@@ -126,7 +126,7 @@ for index, row in highlighted.iterrows():
 for news_channel in news_channels:
     channel_data = df[df['Brand'] == news_channel]
     closest = attributes[attributes['distance'] <= attributes[attributes['Brand'] == news_channel]['distance'].quantile(0.25)]
-    closest = closest.append(channel_data)
+    closest = pd.concat([closest, channel_data])
     
     if news_channel == 'Asharq News':
         color = 'red'
