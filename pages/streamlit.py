@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Set page layout to wide
+st.set_page_config(layout="wide")
+
 # Data for the perceptual chart
 data = {
     "Item": [0.043485448, 0.002824752, 0.02882878, -0.077079456, -0.01463746, 0.017547201,
@@ -30,8 +33,14 @@ data = {
 
 df = pd.DataFrame(data)
 
+# Streamlit widgets for interactivity
+selected_items = st.multiselect('Select Items', df['Colonne1'].unique(), df['Colonne1'].unique())
+
+# Filter data based on selection
+filtered_df = df[df['Colonne1'].isin(selected_items)]
+
 # Plotting the perceptual chart
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(12, 8))
 
 # Define colors for each channel
 colors = {
@@ -44,12 +53,12 @@ colors = {
 }
 
 # Plot each point with its respective color
-for i, row in df.iterrows():
+for i, row in filtered_df.iterrows():
     color = colors.get(row['Colonne1'], 'black')  # Default color is black if not specified
     ax.scatter(row['Item'], row['Brand'], color=color, label=row['Colonne1'] if row['Colonne1'] in colors else "")
 
 # Adding labels to each point
-for i, row in df.iterrows():
+for i, row in filtered_df.iterrows():
     ax.text(row['Item'], row['Brand'], row['Colonne1'], fontsize=9, ha='right')
 
 ax.set_xlabel("Item")
