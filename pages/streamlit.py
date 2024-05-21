@@ -59,12 +59,9 @@ def find_closest_topics(channel_name, df):
 # Channel picker
 selected_channel = st.selectbox("Select a channel to view details", options=colors.keys())
 
-# Filter data for the selected channel
-filtered_df = df[df['Colonne1'] == selected_channel]
-
 # Plotting the perceptual chart using Plotly
 fig = px.scatter(
-    filtered_df,
+    df,
     x='Item',
     y='Brand',
     text='Colonne1',
@@ -74,8 +71,18 @@ fig = px.scatter(
     labels={'Item': 'Item', 'Brand': 'Brand'}
 )
 
-# Update layout for better visualization
+# Highlight the selected channel
 fig.update_traces(marker=dict(size=12, opacity=0.8), textposition='top center')
+fig.add_scatter(
+    x=df[df['Colonne1'] == selected_channel]['Item'],
+    y=df[df['Colonne1'] == selected_channel]['Brand'],
+    mode='markers+text',
+    marker=dict(size=15, color=colors[selected_channel], symbol='star'),
+    text=df[df['Colonne1'] == selected_channel]['Colonne1'],
+    textposition='top center',
+    showlegend=False
+)
+
 fig.update_layout(
     width=1200,
     height=800,
@@ -95,6 +102,3 @@ st.markdown(f"**{selected_channel}** tends to be known for:")
 st.write(", ".join(closest_topics))
 
 # Run the app with: streamlit run perceptual_chart.py
-
-
-
