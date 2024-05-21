@@ -54,8 +54,8 @@ def find_closest_topics(channel_name, df):
     other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
     distances = cdist(channel_point, other_points)
     closest_indices = distances.argsort()[0][:3]
-    closest_topics = df.iloc[closest_indices]['Colonne1'].values
-    return df.iloc[closest_indices]
+    closest_topics = df.iloc[closest_indices]
+    return closest_topics
 
 # Channel picker
 selected_channel = st.selectbox("Select a channel to view details", options=colors.keys())
@@ -87,16 +87,20 @@ fig.add_scatter(
 # Show only the six channels in the legend
 fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
-# Add lines connecting the selected channel to its closest topics
+# Add shadow shape connecting the selected channel to its closest topics
 closest_topics = find_closest_topics(selected_channel, df)
-for _, topic_row in closest_topics.iterrows():
-    fig.add_trace(go.Scatter(
-        x=[df[df['Colonne1'] == selected_channel]['Item'].values[0], topic_row['Item']],
-        y=[df[df['Colonne1'] == selected_channel]['Brand'].values[0], topic_row['Brand']],
-        mode='lines',
-        line=dict(color=colors[selected_channel], width=2, dash='dot'),
-        showlegend=False
-    ))
+points = pd.concat([df[df['Colonne1'] == selected_channel], closest_topics])[['Item', 'Brand']]
+points = points.append(points.iloc[0])  # Close the polygon
+
+fig.add_trace(go.Scatter(
+    x=points['Item'],
+    y=points['Brand'],
+    fill='toself',
+    fillcolor=colors[selected_channel],
+    opacity=0.1,
+    line=dict(color='rgba(0,0,0,0)'),
+    showlegend=False
+))
 
 fig.update_layout(
     width=1200,
