@@ -122,32 +122,42 @@ for index, row in highlighted.iterrows():
         showlegend=False
     ))
 
+# Define color dictionary
+color_dict = {
+    'Asharq News': 'red',
+    'Sky News Arabia': 'green',
+    'Al Arabiya': 'blue',
+    'Al Jazeera': 'yellow',
+    'Al Hadath': 'orange',
+    'Al Ekhbariya': 'purple'
+}
+
+# Define fill colors with transparency
+fill_colors = {
+    'red': 'rgba(255, 0, 0, 0.1)',
+    'green': 'rgba(0, 255, 0, 0.1)',
+    'blue': 'rgba(0, 0, 255, 0.1)',
+    'yellow': 'rgba(255, 255, 0, 0.1)',
+    'orange': 'rgba(255, 165, 0, 0.1)',
+    'purple': 'rgba(128, 0, 128, 0.1)'
+}
+
 # Draw ellipses around channels to include closest attributes
 for news_channel in news_channels:
     channel_data = df[df['Brand'] == news_channel]
     closest = attributes[attributes['distance'] <= attributes[attributes['Brand'] == news_channel]['distance'].quantile(0.25)]
     closest = pd.concat([closest, channel_data])
     
-    if news_channel == 'Asharq News':
-        color = 'red'
-    elif news_channel == 'Sky News Arabia':
-        color = 'green'
-    elif news_channel == 'Al Arabiya':
-        color = 'blue'
-    elif news_channel == 'Al Jazeera':
-        color = 'yellow'
-    elif news_channel == 'Al Hadath':
-        color = 'orange'
-    elif news_channel == 'Al Ekhbariya':
-        color = 'purple'
-    
+    color = color_dict[news_channel]
+    fillcolor = fill_colors[color]
+
     fig.add_trace(go.Scatter(
         x=np.append(closest['X'].values, closest['X'].values[0]),
         y=np.append(closest['Y'].values, closest['Y'].values[0]),
         mode='lines',
         line=dict(color=color, width=2, dash='dash'),
         fill='toself',
-        fillcolor=f'rgba{tuple(int(color[i:i+2], 16) for i in (0, 2, 4)) + (0.1,)}',
+        fillcolor=fillcolor,
         showlegend=False
     ))
 
@@ -161,4 +171,4 @@ st.write(f"{channel} is known for the following attributes:")
 st.write(", ".join(closest_attributes['Brand'].tolist()))
 
 # Display DataFrame for the selected channel
-st.dataframe(df[df['Brand'] == channel])
+st.dataframe(df[df['Brand'] ==
