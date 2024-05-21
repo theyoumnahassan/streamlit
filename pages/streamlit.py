@@ -27,6 +27,16 @@ data = {
           -0.016517444, 0.033964106, -0.000219319, -0.026489528, -0.058315008, -0.005541743, 0.07254126]
 }
 
+# Define logos for each channel
+logos = {
+    "Asharq News": "https://path_to_asharq_news_logo.png",
+    "Sky News Arabia": "https://path_to_sky_news_arabia_logo.png",
+    "Al Arabiya": "https://path_to_al_arabiya_logo.png",
+    "Al Jazeera": "https://path_to_al_jazeera_logo.png",
+    "Al Hadath": "https://path_to_al_hadath_logo.png",
+    "Al Ekhbariya": "https://path_to_al_ekhbria_logo.png"
+}
+
 # Convert to DataFrame
 df = pd.DataFrame(data)
 
@@ -68,30 +78,25 @@ df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 # Create Perceptual Map
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
 
-# Add large shadows around news channels and relevant topics
-highlighted_areas = news_channels + ["Popular and leading", "Professional", "Ethical", "Aggressive", "Youthful"]
-for area in highlighted_areas:
-    area_data = df[df['Brand'] == area]
-    fig.add_trace(go.Scatter(
-        x=[area_data['X'].values[0]] * 20,
-        y=[area_data['Y'].values[0]] * 20,
-        mode='markers',
-        marker=dict(
-            size=[20 + i * 5 for i in range(20)],
-            color='rgba(0, 255, 0, 0.1)' if area in news_channels else 'rgba(0, 0, 255, 0.1)',
-            opacity=0.3
-        ),
-        showlegend=False
-    ))
+# Define color dictionary
+color_dict = {
+    'Asharq News': 'red',
+    'Sky News Arabia': 'green',
+    'Al Arabiya': 'blue',
+    'Al Jazeera': 'yellow',
+    'Al Hadath': 'orange',
+    'Al Ekhbariya': 'purple'
+}
 
-# Layout
-fig.update_layout(
-    plot_bgcolor='black',
-    paper_bgcolor='black',
-    font=dict(color='white'),
-    xaxis=dict(showgrid=False),
-    yaxis=dict(showgrid=False)
-)
+# Define fill colors with transparency
+fill_colors = {
+    'red': 'rgba(255, 0, 0, 0.1)',
+    'green': 'rgba(0, 255, 0, 0.1)',
+    'blue': 'rgba(0, 0, 255, 0.1)',
+    'yellow': 'rgba(255, 255, 0, 0.1)',
+    'orange': 'rgba(255, 165, 0, 0.1)',
+    'purple': 'rgba(128, 0, 128, 0.1)'
+}
 
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
@@ -119,26 +124,6 @@ for index, row in highlighted.iterrows():
         showlegend=False
     ))
 
-# Define color dictionary
-color_dict = {
-    'Asharq News': 'red',
-    'Sky News Arabia': 'green',
-    'Al Arabiya': 'blue',
-    'Al Jazeera': 'yellow',
-    'Al Hadath': 'orange',
-    'Al Ekhbariya': 'purple'
-}
-
-# Define fill colors with transparency
-fill_colors = {
-    'red': 'rgba(255, 0, 0, 0.1)',
-    'green': 'rgba(0, 255, 0, 0.1)',
-    'blue': 'rgba(0, 0, 255, 0.1)',
-    'yellow': 'rgba(255, 255, 0, 0.1)',
-    'orange': 'rgba(255, 165, 0, 0.1)',
-    'purple': 'rgba(128, 0, 128, 0.1)'
-}
-
 # Draw ellipses around channels to include closest attributes
 for news_channel in news_channels:
     channel_data = df[df['Brand'] == news_channel]
@@ -158,14 +143,29 @@ for news_channel in news_channels:
         showlegend=False
     ))
 
+# Add logos to the plot
+for news_channel in news_channels:
+    logo_url = logos[news_channel]
+    x_val = df[df['Brand'] == news_channel]['X'].values[0]
+    y_val = df[df['Brand'] == news_channel]['Y'].values[0]
+    fig.add_layout_image(
+        dict(
+            source=logo_url,
+            xref="x",
+            yref="y",
+            x=x_val,
+            y=y_val,
+            sizex=0.1,
+            sizey=0.1,
+            xanchor="center",
+            yanchor="middle"
+        )
+    )
+
 # Display the map with ellipses
 st.plotly_chart(fig, use_container_width=True)
 
 # Display data for the selected channel
 st.write(f"Details for {channel}:")
 
-st.write(f"{channel} is known for the following attributes:")
-st.write(", ".join(closest_attributes['Brand'].tolist()))
-
-# Display DataFrame for the selected channel
-st.dataframe(df[df['Brand'] == channel])
+st.write(f"{
