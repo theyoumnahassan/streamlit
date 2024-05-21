@@ -120,6 +120,18 @@ def create_perceptual_chart(selected_channel):
         showlegend=False
     ))
 
+    # Add legend entries for the six channels
+    for channel in colors.keys():
+        fig.add_scatter(
+            x=[None],
+            y=[None],
+            mode='markers',
+            marker=dict(size=15, color=colors[channel], symbol='circle'),
+            legendgroup=channel,
+            showlegend=True,
+            name=channel
+        )
+
     fig.update_layout(
         width=1200,
         height=800,
@@ -208,4 +220,3 @@ else:
     create_perceptual_chart(page)
 
 # Run the app with: streamlit run your_script.py
-
