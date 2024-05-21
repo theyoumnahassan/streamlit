@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 
 # Data preparation
 data = {
@@ -12,57 +11,19 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Define colors and sizes for specific channels and focus areas
-color_map = {
-    "Asharq News": "red",
-    "Sky News Arabia": "yellow",
-    "Al Arabiya": "grey",
-    "Al Jazeera": "yellow",
-    "Al Hadath": "red",
-    "Al Ekhbariya": "green"
-}
-size_map = {
-    "Sensational": 500,
-    "Reputation": 500,
-    "Strong Coverage": 500,
-    "Popular and Strong Coverage": 500,
-}
-
-# Assign colors and sizes to each brand
-df['Color'] = df['Brand'].apply(lambda x: color_map[x] if x in color_map else 'black')
-df['Size'] = df['Brand'].apply(lambda x: size_map[x] if x in size_map else 100)
-
 # Streamlit app
 st.title('Positioning Map')
 
 # Plotting
 fig, ax = plt.subplots()
-fig.patch.set_facecolor('white')
-ax.set_facecolor('white')
-scatter = ax.scatter(df['Horizontal axis data'], df['Vertical axis data'], c=df['Color'], s=df['Size'])
+scatter = ax.scatter(df['Horizontal axis data'], df['Vertical axis data'])
 
 # Annotate each point with the brand name
 for i, txt in enumerate(df['Brand']):
-    ax.annotate(txt, (df['Horizontal axis data'][i], df['Vertical axis data'][i]), color='black')
+    ax.annotate(txt, (df['Horizontal axis data'][i], df['Vertical axis data'][i]))
 
-# Add shaded areas for focus areas
-ax.add_patch(mpatches.Polygon([[0.04, -0.04], [0.08, 0.08], [0.08, 0.04], [0.04, -0.08]], closed=True, color='grey', alpha=0.3, label='Sensational'))
-ax.add_patch(mpatches.Polygon([[0.01, 0.01], [0.04, 0.08], [0.08, 0.08], [0.08, 0.04], [0.01, 0.01]], closed=True, color='blue', alpha=0.3, label='Reputation'))
-ax.add_patch(mpatches.Polygon([[0.04, -0.08], [0.08, 0.04], [0.12, 0.04], [0.12, -0.08], [0.04, -0.08]], closed=True, color='red', alpha=0.3, label='Strong Coverage'))
-ax.add_patch(mpatches.Polygon([[0.04, -0.12], [0.12, 0.04], [0.16, 0.04], [0.16, -0.12], [0.04, -0.12]], closed=True, color='green', alpha=0.3, label='Popular and Strong Coverage'))
-
-plt.xlabel('Horizontal axis', color='black')
-plt.ylabel('Vertical axis', color='black')
-plt.title('Brand Positioning Map', color='black')
-
-# Change tick color
-ax.tick_params(colors='black')
-
-# Add legend
-legend_handles = [mpatches.Patch(color='grey', alpha=0.3, label='Sensational'),
-                  mpatches.Patch(color='blue', alpha=0.3, label='Reputation'),
-                  mpatches.Patch(color='red', alpha=0.3, label='Strong Coverage'),
-                  mpatches.Patch(color='green', alpha=0.3, label='Popular and Strong Coverage')]
-ax.legend(handles=legend_handles)
+plt.xlabel('Horizontal axis')
+plt.ylabel('Vertical axis')
+plt.title('Brand Positioning Map')
 
 st.pyplot(fig)
