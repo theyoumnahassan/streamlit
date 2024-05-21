@@ -129,29 +129,31 @@ for index, row in highlighted.iterrows():
 
 
 
+# Define circle colors with transparency
+circle_colors = {
+    'red': 'rgba(255, 0, 0, 0.1)',
+    'green': 'rgba(0, 255, 0, 0.1)',
+    'blue': 'rgba(0, 0, 255, 0.1)',
+    'yellow': 'rgba(255, 255, 0, 0.1)',
+    'orange': 'rgba(255, 165, 0, 0.1)',
+    'purple': 'rgba(128, 0, 128, 0.1)'
+}
 
-
+# Draw circles around channels to represent coverage area
 for news_channel in news_channels:
     channel_data = df[df['Brand'] == news_channel]
-    closest = attributes.sort_values(by='distance').head(10)
-    closest = pd.concat([closest, channel_data])
-    
-    color = channel_colors[news_channel]
+    x_val = channel_data['X'].values[0]
+    y_val = channel_data['Y'].values[0]
+    fig.add_shape(
+        type="circle",
+        x0=x_val - 0.03, y0=y_val - 0.03,
+        x1=x_val + 0.03, y1=y_val + 0.03,
+        line=dict(color=channel_colors[news_channel], width=2, dash='dash'),
+        fillcolor=circle_colors[channel_colors[news_channel]],
+        opacity=0.7,
+        layer="below",
+    )
 
-    # Convex hull to create the polygon
-    points = np.vstack((closest['X'], closest['Y'])).T
-    hull = ConvexHull(points)
-    hull_points = points[hull.vertices]
-
-    fig.add_trace(go.Scatter(
-        x=hull_points[:, 0],
-        y=hull_points[:, 1],
-        mode='lines',
-        line=dict(color=color, width=2, dash='dash'),
-        fill='toself',
-        fillcolor=fill_colors[color],
-        showlegend=False
-    ))
 # Add logos to the plot
 for news_channel in news_channels:
     logo_url = logos[news_channel]
