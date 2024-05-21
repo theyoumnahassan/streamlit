@@ -145,33 +145,6 @@ else:
     # Show only the six channels in the legend
     fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
-    # Add logos to the chart
-    logos = {
-        "Asharq News": "asharq.png",
-        "Sky News Arabia": "https://path/to/skynews_logo.png",
-        "Al Arabiya": "https://path/to/alarabiya_logo.png",
-        "Al Jazeera": "https://path/to/aljazeera_logo.png",
-        "Al Hadath": "https://path/to/alhadath_logo.png",
-        "Al Ekhbariya": "https://path/to/alekhbariya_logo.png"
-    }
-
-    for channel, logo_url in logos.items():
-        channel_data = df[df['Colonne1'] == channel]
-        if not channel_data.empty:
-            fig.add_layout_image(
-                dict(
-                    source=logo_url,
-                    xref="x",
-                    yref="y",
-                    x=channel_data['Item'].values[0],
-                    y=channel_data['Brand'].values[0],
-                    sizex=0.1,
-                    sizey=0.1,
-                    xanchor="center",
-                    yanchor="middle"
-                )
-            )
-
     for channel in colors.keys():
         closest_topics = find_closest_topics(channel, df)
         points = pd.concat([df[df['Colonne1'] == channel], closest_topics])[['Item', 'Brand']].values
