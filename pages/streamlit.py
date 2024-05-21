@@ -83,6 +83,9 @@ fig.add_scatter(
     showlegend=False
 )
 
+# Show only the six channels in the legend
+fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
+
 fig.update_layout(
     width=1200,
     height=800,
