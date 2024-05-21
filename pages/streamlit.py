@@ -168,4 +168,8 @@ st.plotly_chart(fig, use_container_width=True)
 # Display data for the selected channel
 st.write(f"Details for {channel}:")
 
-st.write(f"{
+st.write(f"{channel} is known for the following attributes:")
+st.write(", ".join(closest_attributes['Brand'].tolist()))
+
+# Display DataFrame for the selected channel
+st.dataframe(df[df['Brand'] == channel])
