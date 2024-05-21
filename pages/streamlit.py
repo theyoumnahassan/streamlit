@@ -155,7 +155,14 @@ fig.update_layout(
     font=dict(size=14),
     plot_bgcolor='rgba(0,0,0,0)',
     xaxis=dict(showgrid=False),
-    yaxis=dict(showgrid=False)
+    yaxis=dict(showgrid=False),
+    legend=dict(
+        orientation="v",
+        yanchor="top",
+        y=1,
+        xanchor="right",
+        x=1.2
+    )
 )
 
 st.plotly_chart(fig)
