@@ -139,6 +139,9 @@ else:
         labels={'Item': 'Item', 'Brand': 'Brand'}
     )
 
+    # Change all dots to black
+    fig.update_traces(marker=dict(color='black'))
+
     # Show only the six channels in the legend
     fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
