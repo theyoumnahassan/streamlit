@@ -36,7 +36,7 @@ data = {
 df = pd.DataFrame(data)
 
 # Streamlit app
-st.set_page_config(page_title="Perceptual Map", page_icon=":bar_chart:", layout="wide", theme="dark")
+st.set_page_config(page_title="Perceptual Map", page_icon=":bar_chart:", layout="wide")
 
 st.title("Perceptual Map of News Channels")
 
@@ -51,7 +51,9 @@ selected_topic = st.selectbox("Select a Topic:", topics)
 filtered_df = df[df['Topic'] == selected_topic]
 
 # Perceptual Map
-fig = px.scatter(filtered_df, x="Attribute", y="Asharq News", color=filtered_df['Topic'].apply(lambda x: "red" if x == 1 else "green" if x == 2 else "blue"), 
+color_map = {1: 'red', 2: 'green', 3: 'blue'}
+fig = px.scatter(filtered_df, x="Attribute", y="Asharq News", 
+                 color=filtered_df['Topic'].map(color_map), 
                  hover_data=['Skynews Arabia', 'Alarabiya', 'Aljazeera', 'Alhadath', 'Alekhbariya'], 
                  title="Perceptual Map", labels={"x": "Attributes", "y": "Importance"})
 
