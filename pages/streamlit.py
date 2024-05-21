@@ -93,7 +93,7 @@ if selected_channel != "All Channels":
     )
 
     # Highlight the selected channel
-    fig.update_traces(marker=dict(size=12, opacity=0.8, color='black'), textposition='top center')
+    fig.update_traces(marker=dict(size=15, opacity=0.8, color='black'), textposition='top center')
     fig.add_scatter(
         x=df[df['Colonne1'] == selected_channel]['Item'],
         y=df[df['Colonne1'] == selected_channel]['Brand'],
