@@ -93,12 +93,12 @@ if selected_channel != "All Channels":
     )
 
     # Highlight the selected channel
-    fig.update_traces(marker=dict(size=6, opacity=0.8, color='black'), textposition='top center')
+    fig.update_traces(marker=dict(size=10, opacity=0.8, color='black'), textposition='top center')
     fig.add_scatter(
         x=df[df['Colonne1'] == selected_channel]['Item'],
         y=df[df['Colonne1'] == selected_channel]['Brand'],
         mode='markers+text',
-        marker=dict(size=6, color='black', line=dict(width=2, color='black')),
+        marker=dict(size=10, color='black', line=dict(width=2, color='black')),
         text=df[df['Colonne1'] == selected_channel]['Colonne1'],
         textposition='top center',
         showlegend=False
@@ -140,10 +140,37 @@ else:
     )
 
     # Change all dots to black
-    fig.update_traces(marker=dict(size=6, color='black'))
+    fig.update_traces(marker=dict(size=10, color='black'))
 
     # Show only the six channels in the legend
     fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
+
+    # Add logos to the chart
+    logos = {
+        "Asharq News": "https://path/to/asharq_logo.png",
+        "Sky News Arabia": "https://path/to/skynews_logo.png",
+        "Al Arabiya": "https://path/to/alarabiya_logo.png",
+        "Al Jazeera": "https://path/to/aljazeera_logo.png",
+        "Al Hadath": "https://path/to/alhadath_logo.png",
+        "Al Ekhbariya": "https://path/to/alekhbariya_logo.png"
+    }
+
+    for channel, logo_url in logos.items():
+        channel_data = df[df['Colonne1'] == channel]
+        if not channel_data.empty:
+            fig.add_layout_image(
+                dict(
+                    source=logo_url,
+                    xref="x",
+                    yref="y",
+                    x=channel_data['Item'].values[0],
+                    y=channel_data['Brand'].values[0],
+                    sizex=0.1,
+                    sizey=0.1,
+                    xanchor="center",
+                    yanchor="middle"
+                )
+            )
 
     for channel in colors.keys():
         closest_topics = find_closest_topics(channel, df)
