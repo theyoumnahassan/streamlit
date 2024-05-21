@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import numpy as np
+from scipy.spatial import ConvexHull
 
 # Define data
 data = {
