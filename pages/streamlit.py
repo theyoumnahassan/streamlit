@@ -97,4 +97,16 @@ st.plotly_chart(fig, use_container_width=True)
 
 # Display data for the selected channel
 st.write(f"Details for {channel}:")
+
+# Calculate distances for insights
+df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
+                  (df['Y'] - df[df['Brand'] == channel]['Y'].values[0])**2)**0.5
+
+# Get closest brands
+closest_brands = df.sort_values(by='distance').head(10)
+
+st.write(f"{channel} is known for the following attributes:")
+st.write(", ".join(closest_brands['Brand'].tolist()))
+
+# Display DataFrame for the selected channel
 st.dataframe(df[df['Brand'] == channel])
