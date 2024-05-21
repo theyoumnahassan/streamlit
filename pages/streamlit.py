@@ -97,3 +97,4 @@ st.write(", ".join(closest_topics))
 # Run the app with: streamlit run perceptual_chart.py
 
 
+
