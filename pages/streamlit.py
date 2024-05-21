@@ -30,46 +30,49 @@ data = {
 df = pd.DataFrame(data)
 
 # Streamlit App
-st.set_page_config(layout="wide", page_title="Perceptual Map")
+st.set_page_config(layout="wide", page_title="Perceptual Map", initial_sidebar_state="collapsed")
+
+# Apply custom CSS to set the background color of the entire page
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: black;
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Title
 st.title("Perceptual Map of News Channels")
 
 # Channel Picker
-channel = st.selectbox("Choose a channel to focus on:", df["Brand"])
-
-# Highlight specific news channels
 news_channels = ["Asharq News", "Sky News Arabia", "Al Arabiya", "Al Jazeera", "Al Hadath", "Al Ekhbariya"]
+channel = st.selectbox("Choose a channel to focus on:", news_channels)
+
+# Highlight specific news channels and relevant topics
 df['color'] = df['Brand'].apply(lambda x: 'green' if x in news_channels else 'blue')
 df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 
 # Create Perceptual Map
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
 
-# Add shadows around news channels
-for channel in news_channels:
-    channel_data = df[df['Brand'] == channel]
+# Add shadows around news channels and relevant topics
+highlighted_areas = news_channels + ["Popular and leading", "Professional", "Ethical", "Aggressive", "Youthful"]
+for area in highlighted_areas:
+    area_data = df[df['Brand'] == area]
     fig.add_trace(go.Scatter(
-        x=[channel_data['X'].values[0]] * 10,
-        y=[channel_data['Y'].values[0]] * 10,
+        x=[area_data['X'].values[0]] * 10,
+        y=[area_data['Y'].values[0]] * 10,
         mode='markers',
         marker=dict(
             size=[10 + i for i in range(10)],
-            color='rgba(0, 255, 0, 0.1)',
+            color='rgba(0, 255, 0, 0.1)' if area in news_channels else 'rgba(0, 0, 255, 0.1)',
             opacity=0.4
         ),
         showlegend=False
-    ))
-
-# Add labels for highlighted focus areas
-focus_areas = ['Popular and leading', 'Professional', 'Ethical', 'Aggressive', 'Youthful']
-for area in focus_areas:
-    fig.add_trace(go.Scatter(
-        x=df[df['Brand'] == area]['X'], 
-        y=df[df['Brand'] == area]['Y'], 
-        text=area, 
-        mode='markers+text', 
-        textposition='top center'
     ))
 
 # Layout
