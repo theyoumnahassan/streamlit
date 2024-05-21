@@ -91,7 +91,7 @@ fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Bran
 # Set legend labels
 legend_labels = {channel: channel for channel in news_channels}
 fig.update_layout(legend_title_text='News Channels', legend_traceorder='reversed', legend_tracegroupgap=10,
-                  legend_itemsizing='trace', legend_itemclick=False, legend_itemsizing='constant', 
+                  legend_itemclick=False, legend_itemsizing='constant', 
                   legend_title_font=dict(color='white'), legend_font=dict(color='white'), 
                   legend_title=dict(side='top', font=dict(size=16)))
 
