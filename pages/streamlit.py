@@ -160,8 +160,8 @@ fig.update_layout(
         orientation="v",
         yanchor="top",
         y=1,
-        xanchor="right",
-        x=1.2
+        xanchor="left",
+        x=1.02
     )
 )
 
@@ -171,7 +171,3 @@ st.plotly_chart(fig)
 if selected_channel != "All Channels":
     st.subheader(f"Insights for {selected_channel}")
     st.markdown(f"**{selected_channel}** tends to be known for:")
-    st.write(", ".join(closest_topics['Colonne1'].values))
-else:
-    st.subheader("Insights for All Channels")
-    st.markdown("This chart combines all channels for a comprehensive view.")
