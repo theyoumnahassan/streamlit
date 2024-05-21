@@ -38,20 +38,39 @@ st.title("Perceptual Map of News Channels")
 # Channel Picker
 channel = st.selectbox("Choose a channel to focus on:", df["Brand"])
 
-# Highlight selected channel
-df['color'] = df['Brand'].apply(lambda x: 'red' if x == channel else 'blue')
+# Highlight specific news channels
+news_channels = ["Asharq News", "Sky News Arabia", "Al Arabiya", "Al Jazeera", "Al Hadath", "Al Ekhbariya"]
+df['color'] = df['Brand'].apply(lambda x: 'green' if x in news_channels else 'blue')
+df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 
 # Create Perceptual Map
-fig = px.scatter(df, x='X', y='Y', color='color', hover_data=['Brand'])
+fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
+
+# Add shadows around news channels
+for channel in news_channels:
+    channel_data = df[df['Brand'] == channel]
+    fig.add_trace(go.Scatter(
+        x=[channel_data['X'].values[0]] * 10,
+        y=[channel_data['Y'].values[0]] * 10,
+        mode='markers',
+        marker=dict(
+            size=[10 + i for i in range(10)],
+            color='rgba(0, 255, 0, 0.1)',
+            opacity=0.4
+        ),
+        showlegend=False
+    ))
 
 # Add labels for highlighted focus areas
 focus_areas = ['Popular and leading', 'Professional', 'Ethical', 'Aggressive', 'Youthful']
 for area in focus_areas:
-    fig.add_trace(go.Scatter(x=df[df['Brand'] == area]['X'], 
-                             y=df[df['Brand'] == area]['Y'], 
-                             text=area, 
-                             mode='markers+text', 
-                             textposition='top center'))
+    fig.add_trace(go.Scatter(
+        x=df[df['Brand'] == area]['X'], 
+        y=df[df['Brand'] == area]['Y'], 
+        text=area, 
+        mode='markers+text', 
+        textposition='top center'
+    ))
 
 # Layout
 fig.update_layout(
