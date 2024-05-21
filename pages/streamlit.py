@@ -36,6 +36,16 @@ logos = {
     "Al Ekhbariya": "https://path_to_al_ekhbria_logo.png"
 }
 
+# Define colors for each channel
+channel_colors = {
+    "Asharq News": "blue",
+    "Sky News Arabia": "red",
+    "Al Arabiya": "green",
+    "Al Jazeera": "yellow",
+    "Al Hadath": "purple",
+    "Al Ekhbariya": "orange"
+}
+
 # Convert to DataFrame
 df = pd.DataFrame(data)
 
