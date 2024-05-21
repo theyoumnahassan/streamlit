@@ -27,6 +27,16 @@ data = {
           -0.016517444, 0.033964106, -0.000219319, -0.026489528, -0.058315008, -0.005541743, 0.07254126]
 }
 
+# Define logos for each channel
+logos = {
+    "Asharq News": "https://path_to_asharq_news_logo.png",
+    "Sky News Arabia": "https://path_to_sky_news_arabia_logo.png",
+    "Al Arabiya": "https://path_to_al_arabiya_logo.png",
+    "Al Jazeera": "https://path_to_al_jazeera_logo.png",
+    "Al Hadath": "https://path_to_al_hadath_logo.png",
+    "Al Ekhbariya": "https://path_to_al_ekhbria_logo.png"
+}
+
 # Convert to DataFrame
 df = pd.DataFrame(data)
 
@@ -133,7 +143,33 @@ for news_channel in news_channels:
         showlegend=False
     ))
 
-# Display the map with ellipses
+# Add logos to the plot
+for news_channel in news_channels:
+    logo_url = logos[news_channel]
+    x_val = df[df['Brand'] == news_channel]['X'].values[0]
+    y_val = df[df['Brand'] == news_channel]['Y'].values[0]
+    fig.add_layout_image(
+        dict(
+            source=logo_url,
+            xref="x",
+            yref="y",
+            x=x_val,
+            y=y_val,
+            sizex=0.1,
+            sizey=0.1,
+            xanchor="center",
+            yanchor="middle"
+        )
+    )
+
+# Set black background for the plot
+fig.update_layout(
+    plot_bgcolor='black',
+    paper_bgcolor='black',
+    font=dict(color='white')
+)
+
+# Display the map with ellipses and logos
 st.plotly_chart(fig, use_container_width=True)
 
 # Display data for the selected channel
