@@ -4,6 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from scipy.spatial import ConvexHull
 import numpy as np
+from scipy.spatial.distance import cdist
+
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
