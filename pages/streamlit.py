@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+import numpy as np
 
 # Define data
 data = {
@@ -61,7 +62,7 @@ news_channels = ["Asharq News", "Sky News Arabia", "Al Arabiya", "Al Jazeera", "
 channel = st.selectbox("Choose a channel to focus on:", news_channels)
 
 # Highlight specific news channels and relevant topics
-df['color'] = df['Brand'].apply(lambda x: 'green' if x in news_channels else 'blue')
+df['color'] = df['Brand'].apply(lambda x: 'red' if x == 'Asharq News' else ('blue' if x not in news_channels else 'green'))
 df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 
 # Create Perceptual Map
@@ -95,9 +96,6 @@ fig.update_layout(
 # Display the map
 st.plotly_chart(fig, use_container_width=True)
 
-# Display data for the selected channel
-st.write(f"Details for {channel}:")
-
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
                   (df['Y'] - df[df['Brand'] == channel]['Y'].values[0])**2)**0.5
@@ -106,6 +104,61 @@ df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 +
 attributes = df[~df['Brand'].isin(news_channels)]
 closest_attributes = attributes.sort_values(by='distance').head(10)
 
+# Highlight the selected channel and its closest attributes
+highlighted = closest_attributes.append(df[df['Brand'] == channel])
+
+for index, row in highlighted.iterrows():
+    fig.add_trace(go.Scatter(
+        x=[row['X']],
+        y=[row['Y']],
+        mode='markers+text',
+        marker=dict(
+            size=20,
+            color='white',
+            opacity=1
+        ),
+        text=[row['Brand']],
+        textposition='top center',
+        showlegend=False
+    ))
+
+# Draw ellipses around channels to include closest attributes
+for news_channel in news_channels:
+    channel_data = df[df['Brand'] == news_channel]
+    closest = attributes[attributes['distance'] <= attributes[attributes['Brand'] == news_channel]['distance'].quantile(0.25)]
+    closest = closest.append(channel_data)
+    
+    if news_channel == 'Asharq News':
+        color = 'red'
+    elif news_channel == 'Sky News Arabia':
+        color = 'green'
+    elif news_channel == 'Al Arabiya':
+        color = 'blue'
+    elif news_channel == 'Al Jazeera':
+        color = 'yellow'
+    elif news_channel == 'Al Hadath':
+        color = 'orange'
+    elif news_channel == 'Al Ekhbariya':
+        color = 'purple'
+    
+    fig.add_trace(go.Scatter(
+        x=np.append(closest['X'].values, closest['X'].values[0]),
+        y=np.append(closest['Y'].values, closest['Y'].values[0]),
+        mode='lines',
+        line=dict(color=color, width=2, dash='dash'),
+        fill='toself',
+        fillcolor=f'rgba{tuple(int(color[i:i+2], 16) for i in (0, 2, 4)) + (0.1,)}',
+        showlegend=False
+    ))
+
+# Display the map with ellipses
+st.plotly_chart(fig, use_container_width=True)
+
+# Display data for the selected channel
+st.write(f"Details for {channel}:")
+
 st.write(f"{channel} is known for the following attributes:")
 st.write(", ".join(closest_attributes['Brand'].tolist()))
 
+# Display DataFrame for the selected channel
+st.dataframe(df[df['Brand'] == channel])
