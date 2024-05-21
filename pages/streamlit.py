@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
@@ -33,15 +33,6 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Streamlit widgets for interactivity
-selected_items = st.multiselect('Select Items', df['Colonne1'].unique(), df['Colonne1'].unique())
-
-# Filter data based on selection
-filtered_df = df[df['Colonne1'].isin(selected_items)]
-
-# Plotting the perceptual chart
-fig, ax = plt.subplots(figsize=(12, 8))
-
 # Define colors for each channel
 colors = {
     "Asharq News": "red",
@@ -52,24 +43,25 @@ colors = {
     "Al Ekhbariya": "green"
 }
 
-# Plot each point with its respective color
-for i, row in filtered_df.iterrows():
-    color = colors.get(row['Colonne1'], 'black')  # Default color is black if not specified
-    ax.scatter(row['Item'], row['Brand'], color=color, label=row['Colonne1'] if row['Colonne1'] in colors else "")
+# Assign colors to the dataframe
+df['color'] = df['Colonne1'].map(colors).fillna('black')
 
-# Adding labels to each point
-for i, row in filtered_df.iterrows():
-    ax.text(row['Item'], row['Brand'], row['Colonne1'], fontsize=9, ha='right')
+# Plotting the perceptual chart using Plotly
+fig = px.scatter(
+    df,
+    x='Item',
+    y='Brand',
+    text='Colonne1',
+    color='Colonne1',
+    color_discrete_map=colors,
+    title='Perceptual Chart',
+    labels={'Item': 'Item', 'Brand': 'Brand'}
+)
 
-ax.set_xlabel("Item")
-ax.set_ylabel("Brand")
-ax.set_title("Perceptual Chart")
+# Update layout for better visualization
+fig.update_traces(marker=dict(size=12, opacity=0.8), textposition='top center')
+fig.update_layout(width=1200, height=800)
 
-# Avoid duplicate labels
-handles, labels = ax.get_legend_handles_labels()
-by_label = dict(zip(labels, handles))
-ax.legend(by_label.values(), by_label.keys())
-
-st.pyplot(fig)
+st.plotly_chart(fig)
 
 # Run the app with: streamlit run perceptual_chart.py
