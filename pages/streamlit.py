@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from scipy.spatial.distance import cdist
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
@@ -60,8 +61,33 @@ fig = px.scatter(
 
 # Update layout for better visualization
 fig.update_traces(marker=dict(size=12, opacity=0.8), textposition='top center')
-fig.update_layout(width=1200, height=800)
+fig.update_layout(
+    width=1200,
+    height=800,
+    title=dict(x=0.5),
+    font=dict(size=14),
+    plot_bgcolor='rgba(0,0,0,0)',
+    xaxis=dict(showgrid=False),
+    yaxis=dict(showgrid=False)
+)
 
 st.plotly_chart(fig)
 
-# Run the app with: streamlit run perceptual_chart.py
+# Function to find the closest topics
+def find_closest_topics(channel_name, df):
+    channel_point = df[df['Colonne1'] == channel_name][['Item', 'Brand']].values
+    other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
+    distances = cdist(channel_point, other_points)
+    closest_indices = distances.argsort()[0][:3]
+    closest_topics = df.iloc[closest_indices]['Colonne1'].values
+    return closest_topics
+
+# Display insights for each channel
+st.subheader("Channel Insights")
+
+channels = ["Asharq News", "Sky News Arabia", "Al Arabiya", "Al Jazeera", "Al Hadath", "Al Ekhbariya"]
+for channel in channels:
+    closest_topics = find_closest_topics(channel, df)
+    st.markdown(f"**{channel}** tends to be known for:")
+    st.write(", ".join(closest_topics))
+
