@@ -36,28 +36,6 @@ logos = {
     "Al Ekhbariya": "https://path_to_al_ekhbria_logo.png"
 }
 
-
-# Calculate maximum size for circles
-max_circle_size = df['size'].max()
-
-# Highlight the selected channel and its closest attributes
-highlighted = pd.concat([closest_attributes, df[df['Brand'] == channel]])
-
-for index, row in highlighted.iterrows():
-    fig.add_trace(go.Scatter(
-        x=[row['X']],
-        y=[row['Y']],
-        mode='markers+text',
-        marker=dict(
-            size=max_circle_size,
-            color='white',
-            opacity=1
-        ),
-        text=[row['Brand']],
-        textposition='top center',
-        showlegend=False
-    ))
-
 # Define colors for each news channel
 channel_colors = {
     "Asharq News": "red",
@@ -66,16 +44,6 @@ channel_colors = {
     "Al Jazeera": "yellow",
     "Al Hadath": "orange",
     "Al Ekhbariya": "purple"
-}
-
-# Define fill colors with transparency
-fill_colors = {
-    'red': 'rgba(255, 0, 0, 0.1)',
-    'green': 'rgba(0, 255, 0, 0.1)',
-    'blue': 'rgba(0, 0, 255, 0.1)',
-    'yellow': 'rgba(255, 255, 0, 0.1)',
-    'orange': 'rgba(255, 165, 0, 0.1)',
-    'purple': 'rgba(128, 0, 128, 0.1)'
 }
 
 # Convert to DataFrame
@@ -123,6 +91,9 @@ fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Bran
 # Remove legend title and update legend font color
 fig.update_layout(legend_title="News Channels", legend_font=dict(color='white'))
 
+# Calculate maximum size for circles
+max_circle_size = df['size'].max()
+
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
                   (df['Y'] - df[df['Brand'] == channel]['Y'].values[0])**2)**0.5
@@ -135,12 +106,15 @@ closest_attributes = attributes.sort_values(by='distance').head(10)
 highlighted = pd.concat([closest_attributes, df[df['Brand'] == channel]])
 
 for index, row in highlighted.iterrows():
+    # Determine the size for the marker
+    marker_size = max_circle_size if row['Brand'] in news_channels else row['size']
+    
     fig.add_trace(go.Scatter(
         x=[row['X']],
         y=[row['Y']],
         mode='markers+text',
         marker=dict(
-            size=20 if row['Brand'] in news_channels else 8,
+            size=marker_size,
             color='white',
             opacity=1
         ),
