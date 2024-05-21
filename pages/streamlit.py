@@ -30,14 +30,22 @@ data = {
 df = pd.DataFrame(data)
 
 # Streamlit App
-st.set_page_config(layout="wide", page_title="Perceptual Map", initial_sidebar_state="collapsed")
+st.set_page_config(layout="wide", page_title="Perceptual Map")
 
-# Apply custom CSS to set the background color of the entire page
+# Apply Streamlit settings for background color
 st.markdown(
     """
     <style>
-    body {
+    .css-1lcbmhc {
         background-color: black;
+    }
+    .css-17eq0hr {
+        background-color: black;
+    }
+    .css-12ttj6m {
+        background-color: black;
+    }
+    .css-1h2cbd9 {
         color: white;
     }
     </style>
@@ -59,18 +67,18 @@ df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 # Create Perceptual Map
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
 
-# Add shadows around news channels and relevant topics
+# Add large shadows around news channels and relevant topics
 highlighted_areas = news_channels + ["Popular and leading", "Professional", "Ethical", "Aggressive", "Youthful"]
 for area in highlighted_areas:
     area_data = df[df['Brand'] == area]
     fig.add_trace(go.Scatter(
-        x=[area_data['X'].values[0]] * 10,
-        y=[area_data['Y'].values[0]] * 10,
+        x=[area_data['X'].values[0]] * 20,
+        y=[area_data['Y'].values[0]] * 20,
         mode='markers',
         marker=dict(
-            size=[10 + i for i in range(10)],
+            size=[20 + i * 5 for i in range(20)],
             color='rgba(0, 255, 0, 0.1)' if area in news_channels else 'rgba(0, 0, 255, 0.1)',
-            opacity=0.4
+            opacity=0.3
         ),
         showlegend=False
     ))
