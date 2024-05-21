@@ -97,11 +97,8 @@ def create_perceptual_chart(selected_channel):
         marker=dict(size=15, color=colors[selected_channel], symbol='star', line=dict(width=2, color='black')),
         text=df[df['Colonne1'] == selected_channel]['Colonne1'],
         textposition='top center',
-        showlegend=False
+        showlegend=True  # Only show the selected channel in the legend
     )
-
-    # Show only the six channels in the legend
-    fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
 
     # Add smooth shape connecting the selected channel to its closest topics
     closest_topics = find_closest_topics(selected_channel, df)
