@@ -88,8 +88,12 @@ df['size'] = df['Brand'].apply(lambda x: 20 if x in news_channels else 8)
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'],
                  color_discrete_map=channel_colors)
 
-# Remove legend title and update legend font color
-fig.update_layout(legend_title="News Channels", legend_font=dict(color='white'))
+# Set legend labels
+legend_labels = {channel: channel for channel in news_channels}
+fig.update_layout(legend_title_text='News Channels', legend_traceorder='reversed', legend_tracegroupgap=10,
+                  legend_itemsizing='trace', legend_itemclick=False, legend_itemsizing='constant', 
+                  legend_title_font=dict(color='white'), legend_font=dict(color='white'), 
+                  legend_title=dict(side='top', font=dict(size=16)))
 
 # Calculate maximum size for circles
 max_circle_size = df['size'].max()
