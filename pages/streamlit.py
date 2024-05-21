@@ -79,26 +79,6 @@ df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
 # Create Perceptual Map
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
 
-# Define color dictionary
-color_dict = {
-    'Asharq News': 'red',
-    'Sky News Arabia': 'green',
-    'Al Arabiya': 'blue',
-    'Al Jazeera': 'yellow',
-    'Al Hadath': 'orange',
-    'Al Ekhbariya': 'purple'
-}
-
-# Define fill colors with transparency
-fill_colors = {
-    'red': 'rgba(255, 0, 0, 0.1)',
-    'green': 'rgba(0, 255, 0, 0.1)',
-    'blue': 'rgba(0, 0, 255, 0.1)',
-    'yellow': 'rgba(255, 255, 0, 0.1)',
-    'orange': 'rgba(255, 165, 0, 0.1)',
-    'purple': 'rgba(128, 0, 128, 0.1)'
-}
-
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
                   (df['Y'] - df[df['Brand'] == channel]['Y'].values[0])**2)**0.5
@@ -131,9 +111,6 @@ for news_channel in news_channels:
     closest = attributes.sort_values(by='distance').head(10)
     closest = pd.concat([closest, channel_data])
     
-    color = color_dict[news_channel]
-    fillcolor = fill_colors[color]
-
     # Convex hull to create the polygon
     points = np.vstack((closest['X'], closest['Y'])).T
     hull = ConvexHull(points)
@@ -143,9 +120,9 @@ for news_channel in news_channels:
         x=hull_points[:, 0],
         y=hull_points[:, 1],
         mode='lines',
-        line=dict(color=color, width=2, dash='dash'),
+        line=dict(color='white', width=2, dash='dash'),
         fill='toself',
-        fillcolor=fillcolor,
+        fillcolor='rgba(255, 255, 255, 0.1)',
         showlegend=False
     ))
 
@@ -161,10 +138,11 @@ for news_channel in news_channels:
             yref="y",
             x=x_val,
             y=y_val,
-            sizex=0.1,
-            sizey=0.1,
+            sizex=0.15,
+            sizey=0.15,
             xanchor="center",
-            yanchor="middle"
+            yanchor="middle",
+            opacity=0.8
         )
     )
 
