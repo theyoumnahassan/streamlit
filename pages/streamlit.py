@@ -124,18 +124,23 @@ for index, row in highlighted.iterrows():
         showlegend=False
     ))
 
-# Draw ellipses around channels to include closest attributes
+# Draw polygons around channels to include closest attributes
 for news_channel in news_channels:
     channel_data = df[df['Brand'] == news_channel]
-    closest = attributes[attributes['distance'] <= attributes[attributes['Brand'] == news_channel]['distance'].quantile(0.25)]
+    closest = attributes.sort_values(by='distance').head(10)
     closest = pd.concat([closest, channel_data])
     
     color = color_dict[news_channel]
     fillcolor = fill_colors[color]
 
+    # Convex hull to create the polygon
+    points = np.vstack((closest['X'], closest['Y'])).T
+    hull = ConvexHull(points)
+    hull_points = points[hull.vertices]
+
     fig.add_trace(go.Scatter(
-        x=np.append(closest['X'].values, closest['X'].values[0]),
-        y=np.append(closest['Y'].values, closest['Y'].values[0]),
+        x=hull_points[:, 0],
+        y=hull_points[:, 1],
         mode='lines',
         line=dict(color=color, width=2, dash='dash'),
         fill='toself',
