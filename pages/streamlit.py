@@ -80,18 +80,18 @@ channel_options = list(colors.keys()) + ["All Channels"]
 selected_channel = st.selectbox("Select a channel to view details", options=channel_options)
 
 # Plotting the perceptual chart using Plotly
-if selected_channel != "All Channels":
-    fig = px.scatter(
-        df,
-        x='Item',
-        y='Brand',
-        text='Colonne1',
-        color='Colonne1',
-        color_discrete_map=colors,
-        title=f'Perceptual Chart for {selected_channel}',
-        labels={'Item': 'Item', 'Brand': 'Brand'}
-    )
+fig = px.scatter(
+    df,
+    x='Item',
+    y='Brand',
+    text='Colonne1',
+    color='Colonne1',
+    color_discrete_map=colors,
+    title=f'Perceptual Chart for {selected_channel}' if selected_channel != "All Channels" else 'Perceptual Chart for All Channels',
+    labels={'Item': 'Item', 'Brand': 'Brand'}
+)
 
+if selected_channel != "All Channels":
     # Highlight the selected channel
     fig.update_traces(marker=dict(size=12, opacity=0.8, color='black'), textposition='top center')
     fig.add_scatter(
@@ -128,16 +128,25 @@ if selected_channel != "All Channels":
     ))
 
 else:
-    fig = px.scatter(
-        df,
-        x='Item',
-        y='Brand',
-        text='Colonne1',
-        color='Colonne1',
-        color_discrete_map=colors,
-        title='Perceptual Chart for All Channels',
-        labels={'Item': 'Item', 'Brand': 'Brand'}
-    )
+    for channel in colors.keys():
+        closest_topics = find_closest_topics(channel, df)
+        points = pd.concat([df[df['Colonne1'] == channel], closest_topics])[['Item', 'Brand']].values
+        hull = ConvexHull(points)
+        hull_points = points[hull.vertices]
+        hull_points = np.vstack([hull_points, hull_points[0]])  # Close the polygon
+
+        # Calculate smooth shape points
+        x_vals, y_vals = smooth_shape(hull_points)
+
+        fig.add_trace(go.Scatter(
+            x=x_vals,
+            y=y_vals,
+            fill='toself',
+            fillcolor=colors[channel],
+            opacity=0.1,
+            line=dict(color='rgba(0,0,0,0)'),
+            showlegend=False
+        ))
 
 fig.update_layout(
     width=1200,
