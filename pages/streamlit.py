@@ -62,7 +62,8 @@ channel = st.selectbox("Choose a channel to focus on:", news_channels)
 
 # Highlight specific news channels and relevant topics
 df['color'] = df['Brand'].apply(lambda x: 'green' if x in news_channels else 'blue')
-df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
+df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 3)  # Smaller size for non-channels
+df['text_color'] = df['Brand'].apply(lambda x: 'white')
 
 # Create Perceptual Map
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'])
@@ -82,6 +83,18 @@ for area in highlighted_areas:
         ),
         showlegend=False
     ))
+
+# Add labels for all points
+for i in range(len(df)):
+    fig.add_annotation(
+        x=df['X'][i],
+        y=df['Y'][i],
+        text=df['Brand'][i],
+        showarrow=False,
+        font=dict(
+            color='white'
+        )
+    )
 
 # Layout
 fig.update_layout(
