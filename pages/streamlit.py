@@ -48,6 +48,16 @@ channel_colors = {
     "Al Ekhbariya": "purple"
 }
 
+# Define fill colors with transparency
+fill_colors = {
+    'red': 'rgba(255, 0, 0, 0.1)',
+    'green': 'rgba(0, 255, 0, 0.1)',
+    'blue': 'rgba(0, 0, 255, 0.1)',
+    'yellow': 'rgba(255, 255, 0, 0.1)',
+    'orange': 'rgba(255, 165, 0, 0.1)',
+    'purple': 'rgba(128, 0, 128, 0.1)'
+}
+
 # Convert to DataFrame
 df = pd.DataFrame(data)
 
