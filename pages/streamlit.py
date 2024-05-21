@@ -53,7 +53,7 @@ def find_closest_topics(channel_name, df):
     channel_point = df[df['Colonne1'] == channel_name][['Item', 'Brand']].values
     other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
     distances = cdist(channel_point, other_points)
-    closest_indices = distances.argsort()[0][:5]  # Change this to 5 for the five closest topics
+    closest_indices = distances.argsort()[0][:8]  # Change this to 5 for the five closest topics
     closest_topics = df.iloc[closest_indices]
     return closest_topics
 
