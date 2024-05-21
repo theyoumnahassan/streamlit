@@ -93,9 +93,6 @@ fig.update_layout(
     yaxis=dict(showgrid=False)
 )
 
-# Display the map
-st.plotly_chart(fig, use_container_width=True)
-
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
                   (df['Y'] - df[df['Brand'] == channel]['Y'].values[0])**2)**0.5
