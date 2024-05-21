@@ -80,18 +80,18 @@ channel_options = list(colors.keys()) + ["All Channels"]
 selected_channel = st.selectbox("Select a channel to view details", options=channel_options)
 
 # Plotting the perceptual chart using Plotly
-fig = px.scatter(
-    df,
-    x='Item',
-    y='Brand',
-    text='Colonne1',
-    color='Colonne1',
-    color_discrete_map=colors,
-    title=f'Perceptual Chart for {selected_channel}' if selected_channel != "All Channels" else 'Perceptual Chart for All Channels',
-    labels={'Item': 'Item', 'Brand': 'Brand'}
-)
-
 if selected_channel != "All Channels":
+    fig = px.scatter(
+        df,
+        x='Item',
+        y='Brand',
+        text='Colonne1',
+        color='Colonne1',
+        color_discrete_map=colors,
+        title=f'Perceptual Chart for {selected_channel}',
+        labels={'Item': 'Item', 'Brand': 'Brand'}
+    )
+
     # Highlight the selected channel
     fig.update_traces(marker=dict(size=12, opacity=0.8, color='black'), textposition='top center')
     fig.add_scatter(
@@ -128,6 +128,20 @@ if selected_channel != "All Channels":
     ))
 
 else:
+    fig = px.scatter(
+        df,
+        x='Item',
+        y='Brand',
+        text='Colonne1',
+        color='Colonne1',
+        color_discrete_map=colors,
+        title='Perceptual Chart for All Channels',
+        labels={'Item': 'Item', 'Brand': 'Brand'}
+    )
+
+    # Show only the six channels in the legend
+    fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
+
     for channel in colors.keys():
         closest_topics = find_closest_topics(channel, df)
         points = pd.concat([df[df['Colonne1'] == channel], closest_topics])[['Item', 'Brand']].values
@@ -171,3 +185,8 @@ st.plotly_chart(fig)
 if selected_channel != "All Channels":
     st.subheader(f"Insights for {selected_channel}")
     st.markdown(f"**{selected_channel}** tends to be known for:")
+    closest_topics = find_closest_topics(selected_channel, df)
+    st.write(", ".join(closest_topics['Colonne1'].values))
+else:
+    st.subheader("Insights for All Channels")
+    st.markdown("This chart combines all channels for a comprehensive view.")
