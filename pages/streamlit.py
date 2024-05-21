@@ -52,7 +52,7 @@ colors = {
 df['color'] = df['Colonne1'].map(colors).fillna('black')
 
 # Function to find the closest topics
-def find_closest_topics(channel_name, df, min_topics=8):
+def find_closest_topics(channel_name, df, min_topics=10):
     channel_point = df[df['Colonne1'] == channel_name][['Item', 'Brand']].values
     other_points = df[df['Colonne1'] != channel_name][['Item', 'Brand']]
     distances = cdist(channel_point, other_points)[0]
