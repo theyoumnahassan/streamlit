@@ -92,14 +92,14 @@ channel = st.selectbox("Choose a channel to focus on:", news_channels)
 
 # Highlight specific news channels and relevant topics
 df['color'] = df['Brand'].apply(lambda x: channel_colors[x] if x in channel_colors else 'gray')
-df['size'] = df['Brand'].apply(lambda x: 12 if x in news_channels else 8)
+df['size'] = df['Brand'].apply(lambda x: 20 if x in news_channels else 8)
 
 # Create Perceptual Map with customized legend
 fig = px.scatter(df, x='X', y='Y', color='color', size='size', hover_data=['Brand'],
                  color_discrete_map=channel_colors)
 
 # Remove legend title and update legend font color
-fig.update_layout(legend_title=None, legend_font=dict(color='white'))
+fig.update_layout(legend_title="News Channels", legend_font=dict(color='white'))
 
 # Calculate distances for insights
 df['distance'] = ((df['X'] - df[df['Brand'] == channel]['X'].values[0])**2 + 
@@ -118,7 +118,7 @@ for index, row in highlighted.iterrows():
         y=[row['Y']],
         mode='markers+text',
         marker=dict(
-            size=20,
+            size=20 if row['Brand'] in news_channels else 8,
             color='white',
             opacity=1
         ),
