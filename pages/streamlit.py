@@ -101,6 +101,7 @@ if selected_channel != "All Channels":
         marker=dict(size=5, color='black', line=dict(width=2, color='black')),
         text=df[df['Colonne1'] == selected_channel]['Colonne1'],
         textposition='top center',
+        hoverinfo='text',
         showlegend=False
     )
 
@@ -124,6 +125,7 @@ if selected_channel != "All Channels":
         fillcolor=colors[selected_channel],
         opacity=0.1,
         line=dict(color='rgba(0,0,0,0)'),
+        hoverinfo='skip',
         showlegend=False
     ))
 
@@ -162,6 +164,7 @@ else:
             fillcolor=colors[channel],
             opacity=0.1,
             line=dict(color='rgba(0,0,0,0)'),
+            hoverinfo='skip',
             showlegend=False
         ))
 
