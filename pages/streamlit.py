@@ -85,7 +85,6 @@ if selected_channel != "All Channels":
         df,
         x='Item',
         y='Brand',
-        text='Colonne1',
         color='Colonne1',
         color_discrete_map=colors,
         title=f'Perceptual Chart for {selected_channel}',
@@ -97,10 +96,9 @@ if selected_channel != "All Channels":
     fig.add_scatter(
         x=df[df['Colonne1'] == selected_channel]['Item'],
         y=df[df['Colonne1'] == selected_channel]['Brand'],
-        mode='markers+text',
-        marker=dict(size=5, color='black', line=dict(width=2, color='black')),
-        text=df[df['Colonne1'] == selected_channel]['Colonne1'],
-        textposition='top center',
+        mode='markers',
+        marker=dict(size=10, color='black', line=dict(width=2, color='black')),
+        hovertext=df[df['Colonne1'] == selected_channel]['Colonne1'],
         hoverinfo='text',
         showlegend=False
     )
@@ -134,7 +132,6 @@ else:
         df,
         x='Item',
         y='Brand',
-        text='Colonne1',
         color='Colonne1',
         color_discrete_map=colors,
         title='Perceptual Chart for All Channels',
@@ -142,7 +139,7 @@ else:
     )
 
     # Change all dots to black
-    fig.update_traces(marker=dict(size=5, color='black'))
+    fig.update_traces(marker=dict(size=5, color='black'), hoverinfo='text', hovertext=df['Colonne1'])
 
     # Show only the six channels in the legend
     fig.for_each_trace(lambda trace: trace.update(showlegend=True) if trace.name in colors.keys() else trace.update(showlegend=False))
